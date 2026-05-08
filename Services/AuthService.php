@@ -89,20 +89,19 @@
             }
         }
 
-        public function check()
-        {
-            if (!$this->check()) {
+        public function check(){
+            return isset($_SESSION['user_id']);
+        }
+
+        public function user(){
+            if(!$this->check()){
                 return null;
             }
 
             return [
-                'id' => $_SESSION['id'],
-                'name' => $_SESSION['name'],
-                'email' => $_SESSION['user_email']
+                'id'=>$_SESSION['user_id'],
+                'name'=>$_SESSION['name'],
+                'email'=>$_SESSION['email']
             ];
-
-
         }
-
-
     }
