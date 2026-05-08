@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__. '/Config/Database.php';
 
 if (!file_exists(__DIR__ . '/.env')) {
     throw new Exception('.env file not found');
