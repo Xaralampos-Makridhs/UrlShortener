@@ -95,24 +95,41 @@ class ShortLinkService
             return [];
         }
     }
-
     public function delete($linkId, $userId)
     {
         try {
-            $stmt = $this->conn->prepare("
-                DELETE FROM short_links
-                WHERE id = :id
-                  AND user_id = :user_id
-            ");
+            $this->conn->beginTransaction();
 
-            return $stmt->execute([
+            $stmt = $this->conn->prepare("
+            DELETE FROM link_clicks
+            WHERE short_link_id = :link_id
+        ");
+
+            $stmt->execute([
+                ':link_id' => $linkId
+            ]);
+
+            $stmt = $this->conn->prepare("
+            DELETE FROM short_links
+            WHERE id = :id
+              AND user_id = :user_id
+        ");
+
+            $result = $stmt->execute([
                 ':id' => $linkId,
                 ':user_id' => $userId
             ]);
 
+            $this->conn->commit();
+
+            return $result;
+
         } catch (PDOException $e) {
-            error_log("Delete short Link error: " . $e->getMessage());
-            return false;
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+
+            die('Delete Error: ' . $e->getMessage());
         }
     }
 
@@ -120,11 +137,11 @@ class ShortLinkService
     {
         try {
             $stmt = $this->conn->prepare("
-                UPDATE short_links
-                SET is_active = 0
-                WHERE id = :id
-                  AND user_id = :user_id
-            ");
+            UPDATE short_links
+            SET is_active = 0
+            WHERE id = :id
+              AND user_id = :user_id
+        ");
 
             return $stmt->execute([
                 ':id' => $linkId,
@@ -132,8 +149,7 @@ class ShortLinkService
             ]);
 
         } catch (PDOException $e) {
-            error_log("Deactivate Short Link error: " . $e->getMessage());
-            return false;
+            die('Deactivate Error: ' . $e->getMessage());
         }
     }
 

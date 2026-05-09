@@ -5,8 +5,6 @@ require_once __DIR__ . '/../Services/AuthService.php';
 require_once __DIR__ . '/../LinkServices/ShortLinkService.php';
 require_once __DIR__ . '/../LinkServices/ClickTrackingService.php';
 
-/** @var PDO $conn */
-
 $auth = new AuthService($conn);
 $shortLinkService = new ShortLinkService($conn);
 $clickTrackingService = new ClickTrackingService($conn);
@@ -67,8 +65,8 @@ $clicksByDevice = $clickTrackingService->getClicksByDevice($linkId);
 
 <p>
     <strong>Short URL:</strong>
-    <a href="/<?= htmlspecialchars($currentLink['short_code']) ?>" target="_blank">
-        /<?= htmlspecialchars($currentLink['short_code']) ?>
+    <a href="index.php?code=<?= urlencode($currentLink['short_code']) ?>" target="_blank">
+        <?= htmlspecialchars($currentLink['short_code']) ?>
     </a>
 </p>
 

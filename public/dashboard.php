@@ -4,7 +4,6 @@ require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../Services/AuthService.php';
 require_once __DIR__ . '/../LinkServices/ShortLinkService.php';
 
-
 $auth = new AuthService($conn);
 $shortLinkService = new ShortLinkService($conn);
 
@@ -19,6 +18,7 @@ $message = null;
 $error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $originalUrl = $_POST['original_url'] ?? '';
     $title = $_POST['title'] ?? null;
     $customCode = $_POST['custom_code'] ?? null;
@@ -52,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $links = $shortLinkService->getUserLinks((int) $user['id']);
+
 ?>
 
 <!DOCTYPE html>
@@ -64,56 +65,81 @@ $links = $shortLinkService->getUserLinks((int) $user['id']);
 
 <h1>Dashboard URL Shortener</h1>
 
-<p>Welcome, <?= htmlspecialchars($user['name']) ?></p>
+<p>
+    Welcome,
+    <?= htmlspecialchars($user['name']) ?>
+</p>
 
 <p>
     <a href="logout.php">Log Out</a>
 </p>
 
 <?php if ($message): ?>
+
     <p style="color: green;">
         <?= htmlspecialchars($message) ?>
     </p>
+
 <?php endif; ?>
 
 <?php if ($error): ?>
+
     <p style="color: red;">
         <?= htmlspecialchars($error) ?>
     </p>
+
 <?php endif; ?>
 
 <h2>Create Short Link</h2>
 
-<form method="post" action="dashboard.php">
+<form method="POST" action="dashboard.php">
+
     <div>
         <label>Original URL</label><br>
-        <input type="url" name="original_url" required>
+        <input
+                type="url"
+                name="original_url"
+                required
+        >
     </div>
 
     <br>
 
     <div>
         <label>Title</label><br>
-        <input type="text" name="title">
+        <input
+                type="text"
+                name="title"
+        >
     </div>
 
     <br>
 
     <div>
         <label>Custom Code</label><br>
-        <input type="text" name="custom_code" placeholder="optional">
+        <input
+                type="text"
+                name="custom_code"
+                placeholder="optional"
+        >
     </div>
 
     <br>
 
     <div>
         <label>Expires At</label><br>
-        <input type="datetime-local" name="expires_at">
+        <input
+                type="datetime-local"
+                name="expires_at"
+        >
     </div>
 
     <br>
 
-    <button type="submit">Create</button>
+    <button type="submit">
+        Create
+    </button>
+
 </form>
 
 <hr>
@@ -127,6 +153,7 @@ $links = $shortLinkService->getUserLinks((int) $user['id']);
 <?php else: ?>
 
     <table border="1" cellpadding="8" cellspacing="0">
+
         <thead>
         <tr>
             <th>Short Code</th>
@@ -136,20 +163,30 @@ $links = $shortLinkService->getUserLinks((int) $user['id']);
             <th>Expires At</th>
             <th>Created At</th>
             <th>Analytics</th>
+            <th>Actions</th>
         </tr>
         </thead>
 
         <tbody>
+
         <?php foreach ($links as $link): ?>
+
             <tr>
+
                 <td>
-                    <a href="/<?= htmlspecialchars($link['short_code']) ?>" target="_blank">
+                    <a
+                            href="index.php?code=<?= urlencode($link['short_code']) ?>"
+                            target="_blank"
+                    >
                         <?= htmlspecialchars($link['short_code']) ?>
                     </a>
                 </td>
 
                 <td>
-                    <a href="<?= htmlspecialchars($link['original_url']) ?>" target="_blank">
+                    <a
+                            href="<?= htmlspecialchars($link['original_url']) ?>"
+                            target="_blank"
+                    >
                         <?= htmlspecialchars($link['original_url']) ?>
                     </a>
                 </td>
@@ -175,12 +212,59 @@ $links = $shortLinkService->getUserLinks((int) $user['id']);
                         Analytics
                     </a>
                 </td>
+
+                <td>
+
+                    <?php if ($link['is_active']): ?>
+
+                        <form
+                                method="POST"
+                                action="deactive_link.php"
+                                style="display:inline;"
+                        >
+
+                            <input
+                                    type="hidden"
+                                    name="link_id"
+                                    value="<?= (int) $link['id'] ?>"
+                            >
+
+                            <button type="submit">
+                                Deactivate
+                            </button>
+
+                        </form>
+
+                    <?php endif; ?>
+
+                    <form
+                            method="POST"
+                            action="delete_link.php"
+                            style="display:inline;"
+                    >
+
+                        <input
+                                type="hidden"
+                                name="link_id"
+                                value="<?= (int) $link['id'] ?>"
+                        >
+
+                        <button type="submit">
+                            Delete
+                        </button>
+
+                    </form>
+
+                </td>
+
             </tr>
+
         <?php endforeach; ?>
+
         </tbody>
+
     </table>
 
 <?php endif; ?>
-
 </body>
 </html>

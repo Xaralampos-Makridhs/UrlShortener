@@ -4,13 +4,12 @@ require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../LinkServices/ShortLinkService.php';
 require_once __DIR__ . '/../LinkServices/ClickTrackingService.php';
 
-/** @var PDO $conn */
 
 $shortLinkService = new ShortLinkService($conn);
 $clickTrackingService = new ClickTrackingService($conn);
 
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$shortCode = trim($path, '/');
+$shortCode = $_GET['code'] ?? '';
+$shortCode = trim($shortCode);
 
 if ($shortCode === '') {
     echo 'URL Shortener Home';

@@ -18,6 +18,8 @@ class ClickTrackingService
         $browser = $this->detectBrowser($userAgent);
         $device = $this->detectDevice($userAgent);
 
+        $country='Unknown';
+
         try {
             $stmt = $this->conn->prepare("
                 INSERT INTO link_clicks (
@@ -26,7 +28,8 @@ class ClickTrackingService
                     user_agent,
                     referer,
                     browser,
-                    device
+                    device,
+                    country
                 )
                 VALUES (
                     :short_link_id,
@@ -34,7 +37,8 @@ class ClickTrackingService
                     :user_agent,
                     :referer,
                     :browser,
-                    :device
+                    :device,
+                    :country
                 )
             ");
 
@@ -44,11 +48,12 @@ class ClickTrackingService
                 ':user_agent' => $userAgent,
                 ':referer' => $referer,
                 ':browser' => $browser,
-                ':device' => $device
+                ':device' => $device,
+                ':country' => $country
             ]);
 
         } catch (PDOException $e) {
-            error_log("Click tracking Error: " . $e->getMessage());
+            die("Click tracking Error: " . $e->getMessage());
             return false;
         }
     }
