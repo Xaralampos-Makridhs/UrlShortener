@@ -4,7 +4,7 @@
     require_once __DIR__.'/../LinkServices/ShortLinkService.php';
 
     $auth=new AuthService($conn);
-    $service=new ShortLinkService($conn);
+    $shortLinkService=new ShortLinkService($conn);
 
     if(!$auth->check()){
         header('Location: login.php');
@@ -16,11 +16,12 @@
         exit;
     }
 
-    $linkId=isset($_POST['link_id']) ? (int)$linkId['id']:0;
     $user=$auth->user();
 
+    $linkId=isset($_POST['link_id']) ? (int)$user['link_id'] : 0;
+
     if($linkId>0){
-        $shortLinkService->delete($linkId,(int)$user['id']);
+        $shortLinkService->deactivate($linkId,(int)$user['link_id']);
     }
 
     header('Location: dashboard.php');
@@ -31,16 +32,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Delete</title>
+    <title>Login</title>
 </head>
 <body>
-    <form>
-        <input type="hidden" name="link_id" value="<?=$link['id']?>">
-        <button type="submit">Delete</button>
-    </form>
+    <form method="post">
+        <input type="hidden" name="link_id" value="<?= (int) $link['id'] ?>">
 
+        <button type="submit">Deactivate</button>
+    </form>
 </body>
 </html>
-
-
-
