@@ -104,6 +104,7 @@ $auth=new AuthService($conn);
                 <th>Status</th>
                 <th>Expires at</th>
                 <th>Created at</th>
+                <th>Analytics</th>
             </tr>
         </thead>
         <tbody>
@@ -135,6 +136,9 @@ $auth=new AuthService($conn);
 
                 <td>
                     <?= htmlspecialchars($link['created_at'])?>
+                </td>
+                <td>
+                    <a href="/./Analytics/analytics.php?link_id=<?= (int)$link['id']?>">Analytics</a>
                 </td>
             </tr>
             <?php endforeach;?>
