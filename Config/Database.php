@@ -1,8 +1,4 @@
 <?php
-
-//Include the bootstrap file(initializing environment variables)
-require_once __DIR__ . '/../bootstrap.php';
-
 //Define a Database class to manage database connections
 class Database{
     //Class properties for database configuration
