@@ -72,4 +72,75 @@
             }
             return 'Desktop';
         }
+
+        public function getTotalClicks($shortLinkId){
+            try{
+                $stmt=$this->conn->prepare("
+                    SELECT COUNT(*) FROM link_clicks WHERE short_link_id=:short_link_id
+                ");
+
+                $stmt->execute([
+                   ':short_link_id'=>$shortLinkId
+                ]);
+            }catch (PDOException $e){
+                error_log("Get total Clicks error: ".$e->getMessage());
+                return 0;
+            }
+        }
+
+        public function getRecentClicks($shortLinkId,$limit=10){
+            try{
+                $stmt=$this->conn->prepare("
+                    SELECT * FROM link_clicks WHERE short_link_id=:short_link_id
+                    ORDER BY clicked_at DESC
+                    LIMIT :limit
+                ");
+
+                $stmt->bindValue(':short_link_id',$shortLinkId,PDO::FETCH_ASSOC);
+                $stmt->bindValue(':limit',$limi,PDO::PARAM_INT);
+
+                $stmt->execute();
+
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }catch (PDOException $e){
+                error_log('Get Recent Clicks Error: '.$e->getMessage());
+                return [];
+            }
+        }
+
+        public function getClicksByBrowser($shortLinkId){
+            try{
+                $stmt=$this->conn->prepare("
+                    SELECT browser,COUNT(*) AS total
+                    FROM link_clicks
+                    WHERE short_link_id=:short_link_id
+                    GROUP BY browser
+                    ORDER BY total DESC 
+                ");
+
+                $stmt->execute([
+                    ':short_link_id'=>$shortLinkId
+                ]);
+
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            }catch (PDOException $e){
+                error_log('Get Clicks Browser Error: '.$e->getMessage());
+                return [];
+            }
+        }
+
+        public function getClicksByDevice($shortLinkId){
+            try{
+                $stmt=$this->conn->prepare("
+                    SELECT device,COUNT(*) AS total
+                    FROM link_clicks 
+                    WHERE short_link_id=:short_link_id
+                    GROUP BY device
+                    ORDER BY total DESC 
+                ");
+            }catch(PDOException $e){
+                error_log('Get Clicks By Device Error: '.$e->getMessage());
+                return [];
+            }
+        }
     }
