@@ -1,30 +1,39 @@
 <?php
-    require_once __DIR__.'/../bootstrap.php';
-    require_once __DIR__.'/../Services/AuthService.php';
-    require_once __DIR__.'/../LinkServices/ShortLinkService.php';
 
-    $auth=new AuthService($conn);
-    $service=new ShortLinkService($conn);
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../Services/AuthService.php';
+require_once __DIR__ . '/../LinkServices/ShortLinkService.php';
 
-    if(!$auth->check()){
-        header('Location: login.php');
-        exit;
-    }
+/** @var PDO $conn */
 
-    if($_SERVER['REQUEST_METHOD']==='POST'){
-        header('Location: dashboard.php');
-        exit;
-    }
+$auth = new AuthService($conn);
+$shortLinkService = new ShortLinkService($conn);
 
-    $linkId=isset($_POST['link_id']) ? (int)$linkId['id']:0;
-    $user=$auth->user();
+if (!$auth->check()) {
+    header('Location: login.php');
+    exit;
+}
 
-    if($linkId>0){
-        $shortLinkService->delete($linkId,(int)$user['id']);
-    }
-
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: dashboard.php');
     exit;
+}
+
+$user = $auth->user();
+
+$linkId = isset($_POST['link_id'])
+        ? (int) $_POST['link_id']
+        : 0;
+
+if ($linkId > 0 && $user) {
+    $shortLinkService->delete(
+            $linkId,
+            (int) $user['id']
+    );
+}
+
+header('Location: dashboard.php');
+exit;
 ?>
 
 <!DOCTYPE html>
