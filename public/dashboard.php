@@ -138,7 +138,7 @@ $auth=new AuthService($conn);
                     <?= htmlspecialchars($link['created_at'])?>
                 </td>
                 <td>
-                    <a href="/./Analytics/analytics.php?link_id=<?= (int)$link['id']?>">Analytics</a>
+                    <a href="/public/analytics.php?link_id=<?= (int)$link['id']?>">Analytics</a>
                 </td>
             </tr>
             <?php endforeach;?>
