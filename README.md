@@ -122,7 +122,7 @@ Example:
 
 ```env
 DB_HOST=localhost
-DB_NAME=url_shortener
+DB_NAME=urlshortener
 DB_USER=root
 DB_PASS=password
 ```
